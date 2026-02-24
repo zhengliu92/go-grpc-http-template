@@ -1,0 +1,15 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "make desc && go build -o ./tmp/myService ."
+  bin = "./tmp/myService -f etc/myService.yaml"
+  include_ext = ["go", "yaml", "proto"]
+  exclude_dir = ["tmp", "doc", "logs", "third_party"]
+  delay = 1000
+
+[log]
+  time = false
+
+[misc]
+  clean_on_exit = true

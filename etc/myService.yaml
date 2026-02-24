@@ -1,0 +1,56 @@
+Name: myservice.rpc
+ListenOn: 0.0.0.0:8080
+Mode: pro
+
+# gRPC 超时 (ms)
+Timeout: 3000
+
+# CPU 自适应降载阈值 (0-1000, 0=关闭)
+CpuThreshold: 900
+
+# gRPC 健康检查
+Health: true
+
+# 服务发现 (可选，不使用 etcd 时删除此段)
+# Etcd:
+#   Hosts:
+#     - 127.0.0.1:2379
+#   Key: myservice.rpc
+
+# HTTP Gateway 配置 (gRPC -> HTTP 自动转换)
+Gateway:
+  Name: myservice-gw
+  Host: 0.0.0.0
+  Port: 8081
+  Timeout: 5000
+  Upstreams:
+    - Grpc:
+        Endpoints:
+          - 127.0.0.1:8080
+      # gateway 自动从 proto 描述符中读取 google.api.http 注解生成路由
+      ProtoSets:
+        - etc/myService.pb
+
+# 日志配置
+Log:
+  ServiceName: myservice
+  Mode: file
+  Path: logs
+  Level: info
+  KeepDays: 15
+  Compress: true
+  MaxContentLength: 1024
+  MaxSize: 200
+
+# Prometheus 指标
+# Prometheus:
+#   Host: 0.0.0.0
+#   Port: 9091
+#   Path: /metrics
+
+# # 分布式链路追踪 (OpenTelemetry)
+# Telemetry:
+#   Name: myservice
+#   Endpoint: http://localhost:4318
+#   Sampler: 0.1
+#   Batcher: otlphttp

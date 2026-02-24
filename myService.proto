@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package myService;
+option go_package="./myService";
+
+import "google/api/annotations.proto";
+
+message Request {
+}
+
+message Response {
+  string status = 1;
+}
+
+service myService {
+    rpc Health(Request) returns(Response) {
+        option (google.api.http) = {
+            get: "/api/v1/health"
+        };
+    }
+}
