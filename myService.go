@@ -35,8 +35,16 @@ func main() {
 		}
 	})
 
-	// HTTP gateway (gRPC -> HTTP)，使用响应包装中间件
-	gw := gateway.MustNewServer(c.Gateway, gateway.WithMiddleware(middleware.WrapResponse))
+	// HTTP gateway (gRPC -> HTTP)
+	// 中间件顺序：WrapResponse（最外层）→ JwtAuth → handler
+	// WrapResponse 会将 JWT 401 错误也包装为 {code, msg, data} 格式
+	gw := gateway.MustNewServer(c.Gateway, gateway.WithMiddleware(
+		middleware.WrapResponse,
+		middleware.JwtAuth(c.JwtAuth.AccessSecret,
+			"/api/v1/health", // 健康检查：公开
+			"/api/v1/login",  // 登录：公开
+		),
+	))
 
 	// 使用 ServiceGroup 同时管理两个服务
 	// ServiceGroup 内部已处理信号监听 (SIGINT/SIGTERM) 和优雅关闭

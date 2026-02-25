@@ -7,7 +7,7 @@ package server
 import (
 	"context"
 
-	"go-grpc-http-template/internal/logic/myservice"
+	myservicelogic "go-grpc-http-template/internal/logic/myservice"
 	"go-grpc-http-template/internal/svc"
 	"go-grpc-http-template/myService"
 )
@@ -26,4 +26,16 @@ func NewMyServiceServer(svcCtx *svc.ServiceContext) *MyServiceServer {
 func (s *MyServiceServer) Health(ctx context.Context, in *myService.Request) (*myService.Response, error) {
 	l := myservicelogic.NewHealthLogic(ctx, s.svcCtx)
 	return l.Health(in)
+}
+
+// 登录，返回 JWT token（公开路径，无需鉴权）
+func (s *MyServiceServer) Login(ctx context.Context, in *myService.LoginRequest) (*myService.LoginResponse, error) {
+	l := myservicelogic.NewLoginLogic(ctx, s.svcCtx)
+	return l.Login(in)
+}
+
+// 获取当前用户信息（需要 JWT 鉴权）
+func (s *MyServiceServer) UserInfo(ctx context.Context, in *myService.UserInfoRequest) (*myService.UserInfoResponse, error) {
+	l := myservicelogic.NewUserInfoLogic(ctx, s.svcCtx)
+	return l.UserInfo(in)
 }

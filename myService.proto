@@ -12,10 +12,45 @@ message Response {
   string status = 1;
 }
 
+// ----- 登录 -----
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token  = 1;
+  int64  expire = 2;
+}
+
+// ----- 用户信息（需要 JWT 鉴权）-----
+message UserInfoRequest {
+}
+
+message UserInfoResponse {
+  int64  user_id  = 1;
+  string username = 2;
+}
+
 service myService {
     rpc Health(Request) returns(Response) {
         option (google.api.http) = {
             get: "/api/v1/health"
+        };
+    }
+
+    // 登录，返回 JWT token（公开路径，无需鉴权）
+    rpc Login(LoginRequest) returns(LoginResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/login"
+            body: "*"
+        };
+    }
+
+    // 获取当前用户信息（需要 JWT 鉴权）
+    rpc UserInfo(UserInfoRequest) returns(UserInfoResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/user/info"
         };
     }
 }

@@ -14,11 +14,19 @@ import (
 )
 
 type (
-	Request  = myService.Request
-	Response = myService.Response
+	LoginRequest     = myService.LoginRequest
+	LoginResponse    = myService.LoginResponse
+	Request          = myService.Request
+	Response         = myService.Response
+	UserInfoRequest  = myService.UserInfoRequest
+	UserInfoResponse = myService.UserInfoResponse
 
 	MyService interface {
 		Health(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+		// 登录，返回 JWT token（公开路径，无需鉴权）
+		Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+		// 获取当前用户信息（需要 JWT 鉴权）
+		UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 	}
 
 	defaultMyService struct {
@@ -35,4 +43,16 @@ func NewMyService(cli zrpc.Client) MyService {
 func (m *defaultMyService) Health(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	client := myService.NewMyServiceClient(m.cli.Conn())
 	return client.Health(ctx, in, opts...)
+}
+
+// 登录，返回 JWT token（公开路径，无需鉴权）
+func (m *defaultMyService) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	client := myService.NewMyServiceClient(m.cli.Conn())
+	return client.Login(ctx, in, opts...)
+}
+
+// 获取当前用户信息（需要 JWT 鉴权）
+func (m *defaultMyService) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
+	client := myService.NewMyServiceClient(m.cli.Conn())
+	return client.UserInfo(ctx, in, opts...)
 }
