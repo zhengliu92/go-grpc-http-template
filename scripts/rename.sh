@@ -46,7 +46,7 @@ fi
 echo "[1/4] 替换文件内容..."
 
 # 需要替换的文件类型
-FILES=$(find . -type f \( -name "*.go" -o -name "*.proto" -o -name "*.yaml" -o -name "*.toml" -o -name "*.mod" -o -name "makefile" \) \
+FILES=$(find . -type f \( -name "*.go" -o -name "*.proto" -o -name "*.yaml" -o -name "*.toml" -o -name "*.mod" -o -name "makefile" -o -name "*.sh" \) \
     ! -path "./third_party/*" ! -path "./tmp/*" ! -path "./.git/*")
 
 for f in $FILES; do

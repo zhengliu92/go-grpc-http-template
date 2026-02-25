@@ -11,11 +11,11 @@ CpuThreshold: 900
 # gRPC 健康检查
 Health: true
 
-# 服务发现 (可选，不使用 etcd 时删除此段)
-# Etcd:
-#   Hosts:
-#     - 127.0.0.1:2379
-#   Key: myservice.rpc
+# 服务发现 - etcd 注册 (gRPC 服务端启动时自动注册到 etcd)
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: myservice.rpc
 
 # HTTP Gateway 配置 (gRPC -> HTTP 自动转换)
 Gateway:
@@ -25,8 +25,11 @@ Gateway:
   Timeout: 5000
   Upstreams:
     - Grpc:
-        Endpoints:
-          - 127.0.0.1:8080
+        # 通过 etcd 服务发现，与上方 Etcd.Key 对应
+        Etcd:
+          Hosts:
+            - 127.0.0.1:2379
+          Key: myservice.rpc
       # gateway 自动从 proto 描述符中读取 google.api.http 注解生成路由
       ProtoSets:
         - etc/myService.pb
